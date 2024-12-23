@@ -1,0 +1,27 @@
+ARG BASE_IMAGE="quay.io/fedora/fedora"
+ARG BASE_VERSION="41"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION} AS base
+
+# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
+    && dnf install -y \
+        tailscale \
+    && dnf clean all \
+    && rm -rf /var/cache/yum \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
+
+# install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
+RUN dnf install -y \
+        systemd \
+    && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm -o /tmp/cloudflared.rpm \
+    && dnf install -y \
+        /tmp/cloudflared.rpm \
+    && dnf clean all \
+    && rm -rf /var/cache/yum \
+    && rm -f /tmp/cloudflared.rpm
+
+RUN systemctl enable tailscaled
+
+# systemd
+ENTRYPOINT ["/sbin/init"]

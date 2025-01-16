@@ -4,7 +4,9 @@ ARG BASE_VERSION="41"
 FROM ${BASE_IMAGE}:${BASE_VERSION} AS base
 
 # install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
-RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
+RUN dnf install -y \
+        dnf-plugins-core \
+    && dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
     && dnf install -y \
         tailscale \
     && dnf clean all \

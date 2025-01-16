@@ -5,7 +5,7 @@ FROM ${BASE_IMAGE}:${BASE_VERSION} AS base
 
 # install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
 RUN dnf install -y \
-        dnf-plugins-core \
+        'dnf5-command(config-manager)' \
     && dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
     && dnf install -y \
         tailscale \

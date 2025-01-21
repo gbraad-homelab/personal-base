@@ -16,6 +16,7 @@ jobs:
       - name: Run podman build - (bootc) base
         run: |
           podman build -t ghcr.io/gbraad-homelab/private-base/bootc:latest \
+            --build-arg=ADMIN_PASSWD="password" \
             --build-arg=BASE_IMAGE="quay.io/fedora/fedora-bootc" \
             --build-arg=BASE_VERSION="41" \
             -f containers/Containerfile-base .

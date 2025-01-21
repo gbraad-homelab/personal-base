@@ -3,10 +3,23 @@ ARG BASE_VERSION="41"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION} AS base
 
-# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+ARG ADMIN_PASSWD
+# hadolint ignore=DL4006
+RUN if [ -n "${ADMIN_PASSWD}" ] ; then \
+        useradd -m -d /var/home/admin -G wheel admin \
+        && echo "admin:${ADMIN_PASSWD}" | chpasswd
+    fi
+
+# essential packages
 RUN dnf install -y \
+        dnf-plugins-core git-core \
+    && dnf install -y \
         'dnf5-command(config-manager)' \
-    && dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
+    && dnf clean all \
+    && rm -rf /var/cache/yum
+
+# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
     && dnf install -y \
         tailscale \
     && dnf clean all \

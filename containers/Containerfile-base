@@ -7,7 +7,7 @@ ARG ADMIN_PASSWD
 # hadolint ignore=DL4006
 RUN if [ -n "${ADMIN_PASSWD}" ] ; then \
         useradd -m -d /var/home/admin -G wheel admin \
-        && echo "admin:${ADMIN_PASSWD}" | chpasswd
+        && echo "admin:${ADMIN_PASSWD}" | chpasswd; \
     fi
 
 # essential packages
